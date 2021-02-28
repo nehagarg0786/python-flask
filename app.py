@@ -6,7 +6,7 @@ import logging
 import urllib.parse 
 
 
-params = urllib.parse.quote_plus("DRIVER={ODBC Driver 13 for SQL Server};SERVER=servernameflask.database.windows.net;DATABASE=DatabaseName;UID=neha;PWD=flask@123")
+params = urllib.parse.quote_plus("DRIVER={ODBC Driver 17 for SQL Server};SERVER=servernameflask.database.windows.net;DATABASE=DatabaseName;UID=neha;PWD=flask@123")
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "mssql+pyodbc:///?odbc_connect=%s" % params  #'sqlite:///mydb.db'
