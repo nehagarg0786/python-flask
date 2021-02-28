@@ -3,10 +3,15 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, UserMixin, logout_user
 from datetime import datetime
 import logging
+import urllib.parse 
+
+
+params = urllib.parse.quote_plus("DRIVER={ODBC Driver 13 for SQL Server};SERVER=servernameflask.database.windows.net;DATABASE=DatabaseName;UID=neha;PWD=flask@123")
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mydb.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = "mssql+pyodbc:///?odbc_connect=%s" % params  #'sqlite:///mydb.db'
 app.config['SECRET_KEY'] = 'super secret key'
+app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -41,8 +46,8 @@ def main():
 
 @app.route('/') #blank URL
 def index():
-    data = Blog.query.all()
-    return render_template("index.html", data=data)
+    #data = Blog.query.all()
+    return render_template("index.html")#, data=data)
 
 @app.route('/login', methods=['GET','POST']) #error-__init__() got an unexpected keyword argument 'method'(s is missing)
 def login():
@@ -91,41 +96,41 @@ def logout():
     logout_user()
     return redirect('/')
 
-@app.route('/blogpost', methods=['GET','POST']) #blank URL
-def blogpost():
-    if request.method=='POST':
-        title = request.form.get('title')
-        content= request.form.get('content')
-        blog = Blog(title=title,content=content)
-        db.session.add(blog)
-        db.session.commit()
-        flash("Your post has been submitted successfully", 'success')
-        return redirect ('/')
+# @app.route('/blogpost', methods=['GET','POST']) #blank URL
+# def blogpost():
+#     if request.method=='POST':
+#         title = request.form.get('title')
+#         content= request.form.get('content')
+#         blog = Blog(title=title,content=content)
+#         db.session.add(blog)
+#         db.session.commit()
+#         flash("Your post has been submitted successfully", 'success')
+#         return redirect ('/')
 
-    return render_template('blog.html')
-@app.route("/blog_detail/<int:id>", methods=['GET','POST']) #blank URL
-def blogdetail(id):
-    blog = Blog.query.get(id)
-    return render_template('blog_detail.html', blog=blog)
+#     return render_template('blog.html')
+# @app.route("/blog_detail/<int:id>", methods=['GET','POST']) #blank URL
+# def blogdetail(id):
+#     blog = Blog.query.get(id)
+#     return render_template('blog_detail.html', blog=blog)
 
-@app.route("/delete/<int:id>", methods=['GET','POST']) #blank URL
-def delete_post(id):
-    blog = Blog.query.get(id)
-    db.session.delete(blog)
-    db.session.commit()
-    flash("Post has been deleted, Success")
-    return redirect('/')
+# @app.route("/delete/<int:id>", methods=['GET','POST']) #blank URL
+# def delete_post(id):
+#     blog = Blog.query.get(id)
+#     db.session.delete(blog)
+#     db.session.commit()
+#     flash("Post has been deleted, Success")
+#     return redirect('/')
 
-@app.route("/edit/<int:id>", methods=['GET','POST']) #blank URL
-def edit_post(id):
-    blog = Blog.query.get(id)
-    if request.method=='POST':
-        blog.title=request.form.get('title')
-        blog.content=request.form.get('content')
-        db.session.commit()
-        flash("Post has been updated, Success")
-        return redirect('/')
-    return render_template('edit.html',blog=blog)
+# @app.route("/edit/<int:id>", methods=['GET','POST']) #blank URL
+# def edit_post(id):
+#     blog = Blog.query.get(id)
+#     if request.method=='POST':
+#         blog.title=request.form.get('title')
+#         blog.content=request.form.get('content')
+#         db.session.commit()
+#         flash("Post has been updated, Success")
+#         return redirect('/')
+#     return render_template('edit.html',blog=blog)
 
 
    
